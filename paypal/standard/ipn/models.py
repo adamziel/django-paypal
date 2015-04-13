@@ -20,7 +20,10 @@ class PayPalIPN(PayPalStandardBase):
 
     def _postback(self):
         """Perform PayPal Postback validation."""
-        return requests.post(self.get_endpoint(), data=b("cmd=_notify-validate&%s" % self.query)).content
+        data = b("cmd=_notify-validate&%s" % self.query)
+        if isinstance(data, unicode):
+            data = bytes(data)
+        return requests.post(self.get_endpoint(), data=data).content
 
     def _verify_postback(self):
         if self.response != "VERIFIED":
